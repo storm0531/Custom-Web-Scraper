@@ -5,6 +5,7 @@ from selenium.webdriver.common.by import By
 
 page_url = "https://example"
 extract_attribute = "class"
+webdriver_path = "c:/user/.../geckodriver.exe"
 
 tag_name = "div"
 id_to_find = "siteSub"
@@ -27,7 +28,7 @@ print(tags.get(extract_attribute))
 #<--------------------------  scrapping with selenuim web boot  -------------------------------------->
 #constants for selenium
 
-driver = webdriver.Firefox(executable_path="D:/main programs/coding/geckodriver.exe")
+driver = webdriver.Firefox(executable_path=webdriver_path)
 driver.get(page_url)
 
 # finder_tag = driver.find_element(By.TAG_NAME,tag_name)
