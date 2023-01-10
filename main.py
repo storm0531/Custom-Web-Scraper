@@ -1,48 +1,58 @@
 import requests
-from selenium import webdriver
+from requests.exceptions import MissingSchema
 from bs4 import BeautifulSoup
-from selenium.webdriver.common.by import By
 
-page_url = "https://example"
-extract_attribute = "class"
-webdriver_path = "c:/user/.../geckodriver.exe"
+# scrapping with beautiful soup
+scrapping = True
+page_url = input("What is the site url to scrap?place url...: ")
 
-tag_name = "div"
-id_to_find = "siteSub"
-class_to_find = "title"
-# name_to_find = "username"
+while scrapping:
+    num_of_element = 0
 
+    try:
+        response = requests.get(page_url)
+        page_text = response.text
+        soup = BeautifulSoup(page_text, "html.parser")
+    except MissingSchema:
+        print("sorry but that is not in correct url format try again")
+        continue
 
-#scrapping with beautiful soup
-response = requests.get(page_url)
-page_text = response.text
-soup = BeautifulSoup(page_text,"html.parser")
-# print(soup)
+    tag_name = input("what is that element tag name(a p div li h1 h2 ...): ")
 
-tags = soup.find(name=tag_name,class_=class_to_find,id=id_to_find)
-print(tags.get(extract_attribute))
+    # --------------------- find by selectors -----------------#
+    id_to_find = input("what is element id (if none then pass): ")
+    if id_to_find != "":
+        id_to_find = "#" + id_to_find
+    class_to_find = input("what is element class (if none then pass): ")
+    if class_to_find != "":
+        class_to_find = "." + class_to_find
 
-# selected = soup.select_one(selector=f"{tag_name} .{class_to_find} #{id_to_find}")
-# print(selected.get(extract_attribute))
+    selected = soup.select(selector=f"{tag_name} {class_to_find} {id_to_find}")
+    print(selected)
 
-#<--------------------------  scrapping with selenuim web boot  -------------------------------------->
-#constants for selenium
+    extract_attribute = input("what attribute you want to extract from that element( href,title,class,id,text,... ): ")
 
-driver = webdriver.Firefox(executable_path=webdriver_path)
-driver.get(page_url)
+    # -----------------------find by .find_all()-------------------------#
+    # find_attr = input("place attribute that want to find element with from that page?(class,id,string):").lower()
+    # by_attribute_values = input(
+    #     "place that attribute value you want to find(if multiple values separate them by space): ")
+    # extract_attribute = input("what attribute you want to extract from that element( href,title,class,id,text,... ): ")
+    #
+    # if find_attr == "class":
+    #     selected = soup.find_all(name=tag_name, class_=by_attribute_values)
+    # elif find_attr == "id":
+    #     selected = soup.find_all(name=tag_name,id=by_attribute_values)
+    # else:
+    #     selected = soup.find_all(name=tag_name,string=by_attribute_values)
 
-# finder_tag = driver.find_element(By.TAG_NAME,tag_name)
-finder_id = driver.find_element(By.ID,id_to_find)
-# finder_class = driver.find_element(By.CLASS_NAME,class_to_find)
-# finder_name = driver.find_element(By.NAME,id_to_find)
+    for element in selected:
+        num_of_element += 1
+        extracted_part = element.get(extract_attribute)
+        print(f"{num_of_element}:{extracted_part}")
 
-# print( finder_tag.get_attribute(extract_attribute) )
-print( finder_id.get_attribute(extract_attribute) )
-# print( finder_class.get_attribute(extract_attribute) )
-# print( finder_name.get_attribute(extract_attribute) )
+    try_again_scrapping = input("are you want to do scrap this site again?(Y/N) or (end): ").upper()
 
-#for beautiful to scrap
-# content = driver.page_source
-# soup = BeautifulSoup(content,"html.parser")
-
-driver.quit()
+    if try_again_scrapping == "N":
+        page_url = input("What is the site url to scrap?place url...: ")
+    elif try_again_scrapping == "END":
+        scrapping = False
